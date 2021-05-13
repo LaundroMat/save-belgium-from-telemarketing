@@ -5,13 +5,15 @@ description = ""
 authors = ["Mathieu Dhondt <laundro@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "~3.8"
 requests = "^2.25.1"
 Faker = "^8.1.3"
 arrow = "^1.1.0"
 loguru = "^0.5.3"
+Flask = "^1.0"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
