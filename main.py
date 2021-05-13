@@ -83,7 +83,7 @@ def generate_phone_number(selected_area_codes: list = None, range_start: int = 0
     for area_code in [ac for ac in mobile_area_codes if selected_area_codes is None or ac in selected_area_codes]:
         phone_number = range_start
         while phone_number <= (range_end or 999999):
-            yield f"{area_code[1:]}{phone_number:0>7}"
+            yield f"{area_code[1:]}{phone_number:0>6}"
             phone_number += 1
 
 
