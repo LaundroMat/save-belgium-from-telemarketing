@@ -1,3 +1,5 @@
+import collections
+import random
 from typing import Union
 
 import requests
@@ -8,29 +10,50 @@ from loguru import logger
 fake = Faker(locale="nl-BE")
 
 
-def create_account_data():
-    # login must be email adress
+def get_user_data():
     login = fake.ascii_safe_email()
     return {
         "login": login,
         "email": login,
-        "password": fake.password(),
+        "pass": fake.password(),    # Yes, "pass" ¯\_(ツ)_/¯
         "firstName": fake.first_name(),
         "lastName": fake.last_name(),
-        "language": "nl",
-        "gender": "M"
+        "language": random.choice(["nl", "fr", "de", "en"]),
+        "gender": random.choice(["M", "F"])
     }
 
 
-"""
-{
-    "createdAtIso": "2021-05-12T23:10:25+00:00",
-    "id": 2060236,
-    "name": "Lucas De Vis",
-    "number": "+32 47998753",
-    "user": 1362015
-}
-"""
+UserRecord = collections.namedtuple('UserRecord', ['id', 'auth_token', 'email'])
+
+
+def create_account() -> UserRecord:
+    # login must be email adress
+    user_data = get_user_data()
+
+    # Create user
+    response = requests.post("https://www.dncm.be/wp-json/app/v1/consumerregistration", json=user_data)
+    try:
+        assert response.status_code == requests.codes.created
+    except AssertionError:
+        if response.status_code == requests.codes.internal_server_error:
+            logger.warning(f"User {user_data['email']} already exists; retrying")
+            if response.json()['code'] == "existing_user_login":
+                create_account()
+        raise Exception(f"Something went wrong when creating new user: f{response.status_code}: f{response.json()}")
+
+    response = requests.post("https://www.dncm.be/wp-json/jwt-auth/v1/token", json={
+        "username": user_data["email"],
+        "password": user_data["pass"]
+    })
+
+    new_user_data = response.json()
+    logger.debug(new_user_data)
+    logger.info(f"Created new user {new_user_data['user']['email']} with password {user_data['pass']}")
+    return UserRecord(
+        id=new_user_data['user']['id'],
+        auth_token=new_user_data['token'],
+        email=new_user_data['user']['email']
+    )
 
 
 def generate_phone_number(selected_area_codes: list = None, range_start: int = 0, range_end: int = None):
@@ -66,35 +89,32 @@ def generate_phone_number(selected_area_codes: list = None, range_start: int = 0
 
 if __name__ == '__main__':
     print("Which area codes do you want to cover?")
-    area_codes = [ac.strip() for ac in input("E.g. '02,03,0474' [leave empty to do all area_codes]: ").split(',') if ac.strip()]
+    area_codes = [ac.strip() for ac in input("E.g. 050 or 02,03,0474 [leave empty to do all area_codes]: ").split(',') if ac.strip()]
 
-    range_start = int(input("Start at: [leave empty to start at 0] ") or 0)
-    range_end = int(input("End at: [leave empty to end at highest possible] ") or 0)
+    range_start = int(input("Start at [leave empty to start at 0]: ") or 0)
+    range_end = int(input("End at [leave empty to end at highest possible]: ") or 0)
 
     really_do_this = input("Do you really want to do this? [y/N] ").casefold() == "y"
 
+    user_record = create_account() if really_do_this else UserRecord(id=fake.md5(), auth_token=fake.md5(), email=fake.email())
+
     for phone_number in generate_phone_number(area_codes, range_start, range_end):
         data = {
-            "createdAtIso": arrow.now().isoformat(),
-            "id": 2060236,
             "name": f"{fake.first_name()} {fake.last_name()}",
             "number": f"+32 {phone_number}",
-            "user": 1362015
+            "user": user_record.id
         }
 
         if really_do_this:
-            auth_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczpcL1wvd3d3LmRuY20uYmUiLCJpYXQiOjE2MjA4NTMyODQsIm5iZiI6MTYyMDg1MzI4NCwiZXhwIjoxNjIxNDU4MDg0LCJkYXRhIjp7InVzZXIiOnsiaWQiOiIxMzYyMDE1In19fQ.t19sKMS6-yhCWzn0yqKGgeeUQ6NqIxum9TlyIRrbFdw"
-
             response = requests.post(
                 "https://www.dncm.be/wp-json/app/v1/number",
                 headers={
-                    "Authorization": f"Bearer {auth_token}"
+                    "Authorization": f"Bearer {user_record.auth_token}"
                 },
                 json=data
             )
 
             assert response.status_code == requests.codes.created
 
-        log_msg = f"Added {data['number']}" if really_do_this else f"Would have added {data['number']}"
-
+        log_msg = f"Added +32 {phone_number}" if really_do_this else f"Would have added +32 {phone_number}"
         logger.info(log_msg)
