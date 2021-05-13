@@ -1,0 +1,10 @@
+{
+    "production": {
+        "app_function": "app.app",
+        "aws_region": "eu-west-1",
+        "profile_name": "default",
+        "project_name": "do-not-call",
+        "runtime": "python3.8",
+        "s3_bucket": "zappa-do-not-call-prd"
+    }
+}
