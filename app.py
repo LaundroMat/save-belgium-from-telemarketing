@@ -11,7 +11,7 @@ def main():
     return {}
 
 
-@app.route('/account/new')
+@app.route('/account/new', methods=['POST'])
 def create_new_user_account():
     return core.create_account()._asdict()
 

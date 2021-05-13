@@ -10,6 +10,7 @@ UserRecord = collections.namedtuple('UserRecord', ['id', 'auth_token', 'email'])
 
 
 def get_fake_user_data():
+    # login must be email adress
     login = fake.ascii_safe_email()
     return {
         "login": login,
@@ -23,7 +24,6 @@ def get_fake_user_data():
 
 
 def create_account() -> UserRecord:
-    # login must be email adress
     user_data = get_fake_user_data()
 
     # Create user
@@ -31,10 +31,12 @@ def create_account() -> UserRecord:
     try:
         assert response.status_code == requests.codes.created
     except AssertionError:
-        if response.status_code == requests.codes.internal_server_error:
+        if (
+            response.status_code == requests.codes.internal_server_error
+            and response.json()['code'] == "existing_user_login"
+        ):
             logger.warning(f"User {user_data['email']} already exists; retrying")
-            if response.json()['code'] == "existing_user_login":
-                create_account()
+            create_account()
         raise Exception(f"Something went wrong when creating new user: f{response.status_code}: f{response.json()}")
 
     response = requests.post("https://www.dncm.be/wp-json/jwt-auth/v1/token", json={
