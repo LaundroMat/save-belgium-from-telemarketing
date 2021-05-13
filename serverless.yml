@@ -1,0 +1,48 @@
+# serverless.yml
+
+
+service: do-not-call
+
+
+plugins:
+
+  - serverless-python-requirements
+
+  - serverless-wsgi
+
+
+custom:
+
+  wsgi:
+
+    app: app.app
+
+    packRequirements: false
+
+  pythonRequirements:
+
+    dockerizePip: false
+
+
+provider:
+
+  name: aws
+
+  runtime: python3.8
+
+  stage: prd
+
+  region: eu-west-1
+
+
+functions:
+
+  app:
+
+    handler: wsgi.handler
+
+    events:
+
+      - http: ANY /
+
+      - http: 'ANY {proxy+}'

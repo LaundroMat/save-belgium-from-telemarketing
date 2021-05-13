@@ -17,7 +17,7 @@ if __name__ == '__main__':
     for phone_number in generate_phone_numbers(area_codes, range_start, range_end):
         data = {
             "name": f"{fake.first_name()} {fake.last_name()}",
-            "number": f"+32 {phone_number}",
+            "number": f"{phone_number}",
             "user": user_record.id
         }
 
