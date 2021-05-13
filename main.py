@@ -57,6 +57,9 @@ def create_account() -> UserRecord:
 
 
 def generate_phone_number(selected_area_codes: list = None, range_start: int = 0, range_end: int = None):
+
+	# Source: https://en.wikipedia.org/wiki/Telephone_numbers_in_Belgium
+
     large_city_area_codes = ["02", "03", "04", "09"]
     small_city_area_codes = ["010", "011", "012", "013", "014", "015", "016", "019", "050", "051", "052", "053", "054", "055", "056", "057", "058", "059", "060", "061", "063", "064", "065", "067", "068", "069", "071", "080", "081", "082",
                              "083", "084", "085", "086", "087", "089"]
