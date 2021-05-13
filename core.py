@@ -10,7 +10,7 @@ UserRecord = collections.namedtuple('UserRecord', ['id', 'auth_token', 'email'])
 
 
 def get_fake_user_data():
-    # login must be email adress
+    # login must be email address
     login = fake.ascii_safe_email()
     return {
         "login": login,
@@ -32,8 +32,8 @@ def create_account() -> UserRecord:
         assert response.status_code == requests.codes.created
     except AssertionError:
         if (
-            response.status_code == requests.codes.internal_server_error
-            and response.json()['code'] == "existing_user_login"
+                response.status_code == requests.codes.internal_server_error
+                and response.json()['code'] == "existing_user_login"
         ):
             logger.warning(f"User {user_data['email']} already exists; retrying")
             create_account()
@@ -52,7 +52,6 @@ def create_account() -> UserRecord:
         auth_token=new_user_data['token'],
         email=new_user_data['user']['email']
     )
-
 
 
 LARGE_CITY_AREA_CODES = ["02", "03", "04", "09"]
@@ -87,4 +86,3 @@ def generate_phone_numbers(selected_area_codes: list = None, range_start: int = 
         while phone_number <= (range_end or 999999):
             yield f"+32{area_code[1:]}{phone_number:0>6}"
             phone_number += 1
-
