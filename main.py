@@ -15,7 +15,7 @@ def get_user_data():
     return {
         "login": login,
         "email": login,
-        "pass": fake.password(),    # Yes, "pass" ¯\_(ツ)_/¯
+        "pass": fake.password(),  # Yes, "pass" ¯\_(ツ)_/¯
         "firstName": fake.first_name(),
         "lastName": fake.last_name(),
         "language": random.choice(["nl", "fr", "de", "en"]),
@@ -68,19 +68,19 @@ def generate_phone_number(selected_area_codes: list = None, range_start: int = 0
                          '04800', '04801', '04802', '04803', '04804', '04805', '04806', '04807', '04808', '04809', '0481', '0482', '0483', '0484', '0485', '0486', '0487', '0488', '0489', '0490', '0491', '0492', '0493', '0494', '0495',
                          '0496', '0497', '0498', '0499']
 
-    for area_code in [ac for ac in large_city_area_codes if ac in selected_area_codes or not selected_area_codes]:
+    for area_code in [ac for ac in large_city_area_codes if selected_area_codes is None or ac in selected_area_codes]:
         phone_number = range_start
         while phone_number <= (range_end or 9999999):
             yield f"{area_code[1:]}{phone_number:0>7}"
             phone_number += 1
 
-    for area_code in [ac for ac in small_city_area_codes if ac in selected_area_codes or not selected_area_codes]:
+    for area_code in [ac for ac in small_city_area_codes if selected_area_codes is None or ac in selected_area_codes]:
         phone_number = range_start
         while phone_number <= (range_end or 999999):
             yield f"{area_code[1:]}{phone_number:0>6}"
             phone_number += 1
 
-    for area_code in [ac for ac in mobile_area_codes if ac in selected_area_codes or not selected_area_codes]:
+    for area_code in [ac for ac in mobile_area_codes if selected_area_codes is None or ac in selected_area_codes]:
         phone_number = range_start
         while phone_number <= (range_end or 999999):
             yield f"{area_code[1:]}{phone_number:0>7}"
