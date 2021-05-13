@@ -5,6 +5,7 @@ import requests
 from faker import Faker
 from loguru import logger
 
+fake = Faker(locale="nl-BE")
 UserRecord = collections.namedtuple('UserRecord', ['id', 'auth_token', 'email'])
 
 
@@ -51,7 +52,6 @@ def create_account() -> UserRecord:
     )
 
 
-fake = Faker(locale="nl-BE")
 
 LARGE_CITY_AREA_CODES = ["02", "03", "04", "09"]
 SMALL_CITY_AREA_CODES = ["010", "011", "012", "013", "014", "015", "016", "019", "050", "051", "052", "053", "054", "055", "056", "057", "058", "059", "060", "061", "063", "064", "065", "067", "068", "069", "071", "080", "081", "082",
@@ -85,3 +85,4 @@ def generate_phone_numbers(selected_area_codes: list = None, range_start: int = 
         while phone_number <= (range_end or 999999):
             yield f"+32{area_code[1:]}{phone_number:0>6}"
             phone_number += 1
+
