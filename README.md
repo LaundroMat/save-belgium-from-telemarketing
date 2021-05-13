@@ -2,7 +2,7 @@
 
 ### How to install
 
-Requires Python >3.9 and [poetry](https://python-poetry.org/docs/#installation)
+Requires Python >3.9 and [Poetry](https://python-poetry.org/docs/#installation)
 
 Clone this script in a directory (e.g. `do-not-call`) and cd to it.
 
