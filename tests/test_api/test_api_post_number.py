@@ -68,6 +68,7 @@ def test_post_large_city_number(client, mock_requests):
     response = client.post(url_for("post_number_to_user_list"), json=json_data)
     assert mock_requests.post.call_args[1]['json']['number'] == f"+32{json_data['area_code'][1:]}{json_data['number']:0>7}"
 
+
 def test_post_mobile_number(client, mock_requests):
     json_data = {
         'area_code': random.choice(core.MOBILE_AREA_CODES),
@@ -90,6 +91,7 @@ def test_number_padding_for_6_digits(client, mock_requests):
 
     response = client.post(url_for("post_number_to_user_list"), json=json_data)
     assert mock_requests.post.call_args[1]['json']['number'] == f"+32{json_data['area_code'][1:]}000000"
+
 
 def test_number_padding_for_7_digits(client, mock_requests):
     json_data = {

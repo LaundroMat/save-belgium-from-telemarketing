@@ -14,7 +14,7 @@ def create_app():
     app = Flask(__name__)
     cors.init_app(app)
 
-    if os.getenv("FLASK_ENV") == 'development':
+    if os.getenv("FLASK_ENV") == 'develop':
         app.config.from_object('config.DevConfig')
     elif os.getenv("FLASK_ENV") == 'test':
         logger.debug("Test config")
@@ -33,7 +33,7 @@ def create_app():
 
     @app.route('/account/new', methods=['POST'])
     def create_new_user_account():
-        return core.create_account()._asdict() if not DEBUG else core.UserRecord(id=core.fake.md5(), auth_token=core.fake.md5(), email=core.fake.email())._asdict()
+        return core.create_account()._asdict() if not app.config["DEBUG"] else core.UserRecord(id=core.fake.md5(), auth_token=core.fake.md5(), email=core.fake.email())._asdict()
 
     @app.route('/numbers/generate')
     def get_list_of_phone_numbers(range_start: int = 0, range_end: int = None):
